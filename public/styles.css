@@ -14,6 +14,16 @@
   --shadow: 0 20px 40px rgba(15, 23, 42, 0.08);
 }
 
+  color-scheme: light;
+  --bg: #f3f6fb;
+  --card: #ffffff;
+  --text: #1f2937;
+  --primary: #2563eb;
+  --border: #d9e2f1;
+  --income: #15803d;
+  --expense: #b91c1c;
+  --balance: #7c3aed;
+}
 * { box-sizing: border-box; }
 body {
   margin: 0;
@@ -194,3 +204,46 @@ th, td {
 
 .text-link, .ghost-link { color: var(--primary); font-weight: 700; text-decoration: none; }
 .ghost-link { display: inline-flex; align-items: center; padding: 10px 14px; border-radius: 999px; border: 1px solid var(--border); background: white; }
+  background: linear-gradient(180deg, #eef4ff, var(--bg));
+  color: var(--text);
+}
+main { padding: 24px; }
+.topbar {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 20px 24px; background: #0f172a; color: white;
+}
+.brand { font-size: 1.4rem; font-weight: 700; }
+.tagline { margin: 4px 0 0; color: #cbd5e1; }
+.badge, .ghost-button { background: rgba(255,255,255,.1); border: 1px solid rgba(255,255,255,.2); color: white; padding: 10px 14px; border-radius: 999px; }
+.hero, .dashboard-grid { max-width: 1200px; margin: 0 auto; }
+.auth-grid, .dashboard-grid {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px;
+}
+.wide { grid-column: 1 / -1; }
+.card {
+  background: var(--card); border-radius: 18px; padding: 24px; box-shadow: 0 12px 30px rgba(15, 23, 42, 0.08); border: 1px solid var(--border);
+}
+.stack { display: grid; gap: 12px; }
+label { display: grid; gap: 6px; font-size: 0.95rem; }
+input, select, textarea, button {
+  font: inherit; padding: 12px; border-radius: 12px; border: 1px solid #cbd5e1;
+}
+button { background: var(--primary); color: white; cursor: pointer; border: none; }
+button:hover { opacity: 0.92; }
+.error { color: #b91c1c; font-weight: 700; }
+.section-title, .stats, .inline-form { display: flex; gap: 16px; align-items: end; justify-content: space-between; flex-wrap: wrap; }
+.stats { margin-top: 20px; }
+.stat { flex: 1; min-width: 150px; padding: 18px; border-radius: 16px; color: white; }
+.income { background: var(--income); }
+.expense { background: var(--expense); }
+.balance { background: var(--balance); }
+.stat span { display: block; opacity: 0.9; }
+.stat strong { font-size: 1.6rem; }
+table { width: 100%; border-collapse: collapse; }
+th, td { padding: 12px; border-bottom: 1px solid var(--border); text-align: left; vertical-align: top; }
+summary { cursor: pointer; color: var(--primary); }
+.compact-form { margin-top: 10px; }
+@media (max-width: 720px) {
+  .topbar { flex-direction: column; align-items: flex-start; gap: 12px; }
+  main { padding: 16px; }
+}

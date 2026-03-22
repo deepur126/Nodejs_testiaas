@@ -15,6 +15,13 @@ FinanceFlow is a simple Node.js website for login, signup, and month-wise financ
 ## Tech approach
 
 This implementation intentionally uses only built-in Node.js modules so it can run in minimal environments before being integrated with tools like Ansible, Docker, Terraform, or CI/CD systems.
+A simple Node.js finance tracking site with:
+
+- Login and account creation.
+- Local inbuilt JSON database storage for users and transactions.
+- Month-wise dashboard for earnings, expenditure, and net balance.
+- Editable transactions.
+- A single form for core financial details such as targets and notes.
 
 ## Run locally
 
@@ -25,6 +32,9 @@ npm start
 Then open `http://localhost:3000`.
 
 ## Validate
+Open `http://localhost:3000`.
+
+## Validation checks
 
 ```bash
 npm run check
@@ -41,6 +51,13 @@ data/db.json
 ## Git repository usage
 
 If you want to push this project to an external remote later, connect a remote and push the current branch:
+## Data storage
+
+Data is stored in `data/db.json`, so the project can be reused later in IaC and hosting workflows.
+
+## Git hosting
+
+To publish this to a fresh remote repository later:
 
 ```bash
 git remote add origin <your-new-repository-url>
