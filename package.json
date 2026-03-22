@@ -1,0 +1,14 @@
+{
+  "name": "nodejs_testiaas",
+  "version": "1.0.0",
+  "description": "Simple finance tracker with local JSON storage",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "check": "node --check server.js"
+  },
+  "keywords": ["nodejs", "finance", "iaas"],
+  "author": "",
+  "license": "MIT",
+  "type": "commonjs"
+}
