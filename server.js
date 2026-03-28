@@ -29,23 +29,37 @@ const server = http.createServer(async (req, res) => {
     }
 
     if (method === 'GET' && url.pathname === '/') {
+      if (user) {
+        return redirect(res, '/dashboard');
+      }
       return sendHtml(res, renderLayout(renderHomePage({
         errorMessage: url.searchParams.get('error') || '',
         successMessage: url.searchParams.get('success') || ''
-      }), user));
+      }), null));
+    }
+
+    if (method === 'GET' && url.pathname === '/create-account') {
+      const db = readDb();
+      if (user) {
+        return redirect(res, '/dashboard');
+      }
+      return sendHtml(res, renderLayout(renderCreateAccountPage({
+        errorMessage: url.searchParams.get('error') || '',
+        successMessage: url.searchParams.get('success') || ''
+      }), null));
     }
 
     if (method === 'POST' && url.pathname === '/register') {
       const form = await parseForm(req);
       const validationError = validateRegistration(form);
       if (validationError) {
-        return redirect(res, `/?error=${encodeURIComponent(validationError)}`);
+        return redirect(res, `/create-account?error=${encodeURIComponent(validationError)}`);
       }
 
       const db = readDb();
       const email = normalizeEmail(form.email);
       if (db.users.some((candidate) => candidate.email === email)) {
-        return redirect(res, '/?error=An account already exists for that email.');
+        return redirect(res, `/create-account?error=${encodeURIComponent('An account already exists for that email.')}`);
       }
 
       const user = {
@@ -59,7 +73,7 @@ const server = http.createServer(async (req, res) => {
 
       db.users.push(user);
       writeDb(db);
-      return createSession(res, user.id, '/dashboard?success=Account created successfully.');
+      return redirect(res, `/?success=${encodeURIComponent('Account created successfully. Please log in.')}`);
     }
 
     if (method === 'POST' && url.pathname === '/login') {
@@ -68,8 +82,11 @@ const server = http.createServer(async (req, res) => {
       const email = normalizeEmail(form.email || '');
       const userRecord = db.users.find((candidate) => candidate.email === email);
 
-      if (!userRecord || userRecord.passwordHash !== hashPassword(form.password || '')) {
-        return redirect(res, '/?error=Invalid email or password.');
+      if (!userRecord) {
+        return redirect(res, `/create-account?error=${encodeURIComponent('No account found for that email. Please create an account.')}`);
+      }
+      if (userRecord.passwordHash !== hashPassword(form.password || '')) {
+        return redirect(res, `/?error=${encodeURIComponent('Invalid password. If you are a new user, please create an account.')}`);
       }
 
       return createSession(res, userRecord.id, '/dashboard?success=Welcome back.');
@@ -512,15 +529,15 @@ function renderHomePage({ errorMessage, successMessage }) {
     <section class="hero-grid">
       <section class="card intro-card">
         <p class="eyebrow">Simple Node.js website</p>
-        <h1>Manage user accounts and track monthly earnings from one dashboard.</h1>
-        <p>Create a new account with your name and email, then log in to manage financial details, earnings, and expenditure month by month.</p>
+        <h1>Login to access your finance dashboard</h1>
+        <p>Enter your email and password to sign in, or create a new account if you are just getting started.</p>
         ${renderMessage(errorMessage, 'error')}
         ${renderMessage(successMessage, 'success')}
         <ul class="feature-list">
-          <li>New user signup with local persistence</li>
-          <li>Existing user login with secure hashed passwords</li>
-          <li>Monthly dashboard with income, expense, and balance</li>
-          <li>Edit or delete saved transactions later</li>
+          <li>Secure local login with JSON persistence</li>
+          <li>Monthly income and expense tracking</li>
+          <li>Edit or delete saved transactions</li>
+          <li>Optional insurance and financial item tracking</li>
         </ul>
       </section>
 
@@ -532,19 +549,41 @@ function renderHomePage({ errorMessage, successMessage }) {
             <label>Password<input type="password" name="password" placeholder="••••••••" required /></label>
             <button type="submit">Login</button>
           </form>
+          <div class="button-row">
+            <form method="get" action="/create-account">
+              <button type="submit">Create account</button>
+            </form>
+          </div>
         </section>
+      </section>
+    </section>`;
+}
 
+function renderCreateAccountPage({ errorMessage, successMessage }) {
+  return `
+    <section class="hero-grid">
+      <section class="card intro-card">
+        <p class="eyebrow">Create your account</p>
+        <h1>Register and then log in to access the dashboard</h1>
+        <p>Fill in the details below to create your account. After registration, you will be redirected to login.</p>
+        ${renderMessage(errorMessage, 'error')}
+        ${renderMessage(successMessage, 'success')}
+      </section>
+
+      <section class="auth-column">
         <section class="card">
           <h2>Create account</h2>
           <form method="post" action="/register" class="stack">
             <label>Full name<input type="text" name="name" placeholder="Aman Kumar" required /></label>
             <label>Email<input type="email" name="email" placeholder="aman@example.com" required /></label>
             <label>Password<input type="password" name="password" minlength="6" required /></label>
-            <label>Monthly income target<input type="number" step="0.01" min="0" name="monthlyIncomeTarget" value="0" /></label>
-            <label>Monthly budget target<input type="number" step="0.01" min="0" name="monthlyBudgetTarget" value="0" /></label>
-            <label>Financial notes<textarea name="notes" rows="3" placeholder="Savings goals, EMI reminders, or account notes"></textarea></label>
             <button type="submit">Create account</button>
           </form>
+          <div class="button-row">
+            <form method="get" action="/">
+              <button type="submit">Go to login</button>
+            </form>
+          </div>
         </section>
       </section>
     </section>`;
